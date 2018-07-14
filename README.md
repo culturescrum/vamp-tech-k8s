@@ -72,5 +72,5 @@ See the following for setting up persistent storage in DO:
 Destroy it all:
 
 ```bash
-doctl compute droplet rm ${DROPLET_SLUG}-master ${DROPLET_SLUG}-node{01,02,03,04} -f --wait
+doctl compute droplet rm ${DROPLET_SLUG}-master ${DROPLET_SLUG}-node{01,02,03,04} -f
 ```
