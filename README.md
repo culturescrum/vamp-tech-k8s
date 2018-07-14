@@ -52,13 +52,24 @@ ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook host-init.yml && \
   ansible-playbook worker-init.yml
 # If you want to retrieve the kubeconfig after this point:
 ansible-playbook get-kubeconfig.yml
-export KUBECONFIG=kubeconfig/master/etc/kubernetes/admin.conf
+ku
 ```
+
+If you want to use the dashboard, I recommend starting here: https://github.com/kubernetes/dashboard
+
+The quick way to get access is to setup a service account in the default namespace (don't supply it, basically), and create a clusterrolebinding with the clusterrole set to "cluster-admin" and then an identical "rolebinding". Get the secret (`kubectl get secrets` then `kubectl describe <token name>`).
+
+Once you've got the token handy, `kubectl proxy`, then click the `localhost` link in the above dashboard README.md. Use "Token" authentication and copy-paste the token.
+
+See the following for setting up persistent storage in DO:
+
+- https://stackpointcloud.com/community/tutorial/getting-started-with-digitalocean-block-storage-and-kubernetes
+- https://github.com/kubernetes-incubator/external-storage/tree/master/digitalocean
 
 #### Teardown
 
 Destroy it all:
 
 ```bash
-doctl compute droplet rm ${DROPLET_SLUG}-master ${DROPLET_SLUG}-node{01,02,03,04} -f
+doctl compute droplet rm ${DROPLET_SLUG}-master ${DROPLET_SLUG}-node{01,02,03,04} -f --wait
 ```
