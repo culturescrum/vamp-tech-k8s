@@ -1,0 +1,16 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: create the 'vamptech' admin account
+      user: name=vamptech append=yes state=present createhome=yes shell=/bin/bash
+
+    - name: setup 'vamptech' sudo
+      lineinfile:
+        dest: /etc/sudoers
+        line: 'vamptech ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: set up authorized keys
+      authorized_key: user=vamptech key="{{ item }}"
+      with_file:
+        - files/id_vamptech.pub
