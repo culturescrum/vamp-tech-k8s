@@ -26,13 +26,8 @@ NODE_SIZE=s-1vcpu-2gb
 # - example-k8s-node02
 # - example-k8s-node03
 # - example-k8s-node04
-doctl compute droplet create ${DROPLET_SLUG}-master --region ${DO_REGION} --image ${IMAGE_SLUG} --size ${MASTER_SIZE} --enable-private-networking --ssh-keys ${DO_SSH_KEY}
-doctl compute droplet create ${DROPLET_SLUG}-node{01,02,03,04} --region ${DO_REGION}  --image ${IMAGE_SLUG} --size ${NODE_SIZE} --enable-private-networking --ssh-keys ${DO_SSH_KEY}
-
-# Get the host keys - answer yes for each host
-for server in $(doctl compute droplet list --format Name,PublicIPv4 | grep ${DROPLET_SLUG} | awk '{print $2}'); do
-  ssh root@$server exit 0
-done
+doctl compute droplet create ${DROPLET_SLUG}-master --region ${DO_REGION} --image ${IMAGE_SLUG} --size ${MASTER_SIZE} --enable-private-networking --ssh-keys ${DO_SSH_KEY} --wait
+doctl compute droplet create ${DROPLET_SLUG}-node{01,02,03,04} --region ${DO_REGION}  --image ${IMAGE_SLUG} --size ${NODE_SIZE} --enable-private-networking --ssh-keys ${DO_SSH_KEY} --wait
 ```
 
 
@@ -50,12 +45,14 @@ Update IP values (workers are nodes) in `hosts` file.
 Execute the playbooks:
 
 ```bash
-ansible-playbook host-init.yml
-ansible-playbook kube-install.yml
-ansible-playbook kube-init.yml
-ansible-playbook worker-init.yml
+# I'm bad but I don't feel that bad.
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook host-init.yml && \
+  ansible-playbook kube-install.yml && \
+  ansible-playbook kube-init.yml && \
+  ansible-playbook worker-init.yml
 # If you want to retrieve the kubeconfig after this point:
 ansible-playbook get-kubeconfig.yml
+export KUBECONFIG=kubeconfig/master/etc/
 ```
 
 #### Teardown
