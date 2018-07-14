@@ -52,7 +52,7 @@ ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook host-init.yml && \
   ansible-playbook worker-init.yml
 # If you want to retrieve the kubeconfig after this point:
 ansible-playbook get-kubeconfig.yml
-export KUBECONFIG=kubeconfig/master/etc/
+export KUBECONFIG=kubeconfig/master/etc/kubernetes/admin.conf
 ```
 
 #### Teardown
