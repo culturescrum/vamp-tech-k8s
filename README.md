@@ -1,7 +1,8 @@
 # vamp-tech k8s
 
 ## Host config
-### Digital Ocean
+### Example Using DigitalOcean
+
 - master
   - size: s-3vcpu-1gb
 - nodes:
