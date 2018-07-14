@@ -53,7 +53,7 @@ ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook host-init.yml && \
   ansible-playbook worker-init.yml
 # If you want to retrieve the kubeconfig after this point:
 ansible-playbook get-kubeconfig.yml
-ku
+export KUBECONFIG=kubeconfig/master/etc/kubernetes/admin.conf
 ```
 
 If you want to use the dashboard, I recommend starting here: https://github.com/kubernetes/dashboard
