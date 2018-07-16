@@ -39,6 +39,7 @@ ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook host-init.yml && \
 # If you want to retrieve the kubeconfig after this point:
 ansible-playbook get-kubeconfig.yml
 export KUBECONFIG=kubeconfig/master/etc/kubernetes/admin.conf
+kubectl get nodes
 ```
 
 ##### Things to do next
@@ -59,5 +60,5 @@ See the following for setting up persistent storage in DO:
 Destroy it all:
 
 ```bash
-doctl compute droplet rm ${DROPLET_SLUG}-master ${DROPLET_SLUG}-node{01,02,03,04} -f
+./teardown.bash
 ```
