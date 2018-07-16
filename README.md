@@ -62,3 +62,9 @@ Destroy it all:
 ```bash
 ./teardown.bash
 ```
+
+### TODO
+
+- [ ] Refactor into roles
+- [ ] Script out hostkey retrieval
+- [ ] Refactor scripts into functions & move to `scripts/`
