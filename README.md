@@ -11,39 +11,24 @@
 
 #### Setup
 
-Create the hosts:
+The below steps assume you have `doctl` installed and configured with a write-access key. This is outside of the scope of this README.
+
+##### Create the hosts
 
 ```bash
-DROPLET_SLUG=example-k8s
-IMAGE_SLUG=ubuntu-16-04-x64
-DO_SSH_KEY=123456
-DO_REGION=nyc3
-MASTER_SIZE=s-3vcpu-1gb
-NODE_SIZE=s-1vcpu-2gb
-
-# Creates:
-# - example-k8s-master
-# - example-k8s-node01
-# - example-k8s-node02
-# - example-k8s-node03
-# - example-k8s-node04
-doctl compute droplet create ${DROPLET_SLUG}-master --region ${DO_REGION} --image ${IMAGE_SLUG} --size ${MASTER_SIZE} --enable-private-networking --ssh-keys ${DO_SSH_KEY} --wait
-doctl compute droplet create ${DROPLET_SLUG}-node{01,02,03,04} --region ${DO_REGION}  --image ${IMAGE_SLUG} --size ${NODE_SIZE} --enable-private-networking --ssh-keys ${DO_SSH_KEY} --wait
+cp example.env .env
+# edit .env values
+# default, build 1 master, 4 workers
+./build_inventory.bash
+# build 1 master, 6 workers
+./build_inventory.bash 6
 ```
 
+This will stand up the nodes in DigitalOcean using doctl.
 
-Update IP Addresses:
+It will also create a `hosts` inventory file with all of the IPs of the new nodes pre-configured, which you can edit before you run the playbooks.
 
-```bash
-doctl compute droplet list --format Name,PublicIPv4 | grep ${DROPLET_SLUG}
- example-k8s-master  123.45.67.89
- example-k8s-node03  123.45.67.122
- ...
-```
-
-Update IP values (workers are nodes) in `hosts` file.
-
-Execute the playbooks:
+##### Execute the playbooks
 
 ```bash
 # I'm bad but I don't feel that bad.
@@ -54,9 +39,12 @@ ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook host-init.yml && \
 # If you want to retrieve the kubeconfig after this point:
 ansible-playbook get-kubeconfig.yml
 export KUBECONFIG=kubeconfig/master/etc/kubernetes/admin.conf
+kubectl get nodes
 ```
 
-If you want to use the dashboard, I recommend starting here: https://github.com/kubernetes/dashboard
+##### Things to do next
+
+If you want to use the Kubernetes dashboard, I recommend starting here: https://github.com/kubernetes/dashboard
 
 The quick way to get access is to setup a service account in the default namespace (don't supply it, basically), and create a clusterrolebinding with the clusterrole set to "cluster-admin" and then an identical "rolebinding". Get the secret (`kubectl get secrets` then `kubectl describe <token name>`).
 
@@ -72,5 +60,5 @@ See the following for setting up persistent storage in DO:
 Destroy it all:
 
 ```bash
-doctl compute droplet rm ${DROPLET_SLUG}-master ${DROPLET_SLUG}-node{01,02,03,04} -f
+./teardown.bash
 ```
